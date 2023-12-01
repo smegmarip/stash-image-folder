@@ -12,6 +12,6 @@ Installation requires a browser extension such as [Tampermonkey](https://www.tam
 >
 > Find the line `// @match       http://localhost:9999/*` and replace `http://localhost:9999/*` with your Stash address.
 
-[INSTALL USERSCRIPT](dist/scenecaps.user.js?raw=1)
+[INSTALL USERSCRIPT](dist/imageFolder.user.js?raw=1)
 
 Once installed, A new icon will show on an image's or scene's page next to the organized button.
