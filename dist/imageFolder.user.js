@@ -19,6 +19,14 @@
 
   const { stash: stash$1 } = unsafeWindow.stash;
 
+  /**
+   * The rawurlencode function encodes a string to be used in a URL.
+   *
+   *
+   * @param str Specify the string to be encoded
+   *
+   * @return A string in which all non-alphanumeric characters except -_
+   */
   function rawurlencode(str) {
     str = str + "";
     return encodeURIComponent(str)
@@ -29,6 +37,14 @@
       .replace(/\*/g, "%2A");
   }
 
+  /**
+   * The directory function takes a file path and returns the directory part of it.
+   *
+   *
+   * @param filePath Specify the path of the file
+   *
+   * @return The directory part of a file path
+   */
   function directory(filePath) {
     // Replace backslashes with forward slashes for consistency
     let normalizedPath = filePath.replace(/\\/g, "/");
@@ -36,6 +52,14 @@
     return normalizedPath.substring(0, normalizedPath.lastIndexOf("/"));
   }
 
+  /**
+   * The waitForElm function returns a Promise that resolves when the selector is found in the DOM.
+   *
+   *
+   * @param selector Select the element we want to wait for
+   *
+   * @return A promise that resolves with the element when it exists
+   */
   function waitForElm(selector) {
     return new Promise((resolve) => {
       if (document.querySelector(selector)) {
@@ -119,6 +143,14 @@
     }
   }
 
+  /**
+   * The processImage function is called when the page loads.
+   * It waits for the image container to load, then it gets the image path from local storage.
+   * If there is an image path, it creates a button that links to its parent folder and adds it to the DOM.
+   *
+   *
+   * @return The image path
+   */
   function processImage() {
     let btnGrp = ".ml-auto .btn-group";
     let wrapper = ".image-container";
@@ -154,6 +186,15 @@
     });
   }
 
+  /**
+   * The processScene function is called when the page loads.
+   * It waits for the video player to load, then it gets the scene ID from the URL and uses that to get a path to a file on disk.
+   * If there is no path, it removes any &quot;parent folder&quot; button that may have been added previously.
+   * If there is a path, it adds an event listener so that clicking on this button will take you back up one level in your directory structure (to where this scene was found).
+   *
+   *
+   * @return A promise
+   */
   function processScene() {
     let btnGrp = ".ml-auto .btn-group";
     let wrapper = ".VideoPlayer .video-wrapper";
