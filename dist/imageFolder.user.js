@@ -2,7 +2,7 @@
 // @name        imageFolder
 // @description Navigate to parent folder
 // @namespace   https://github.com/smegmarip
-// @version     0.0.3
+// @version     0.0.4
 // @homepage    https://github.com/smegmarip/stash-image-folder/
 // @author      smegmarip
 // @match       http://localhost:9999/*
@@ -101,14 +101,19 @@
     const reqData = {
       query: `{
         findImage(id: ${image_id}){
-          paths { image }
+          files { path }
         }
       }`,
     };
     var result = await stash$1.callGQL(reqData);
-    const path = result.data.findImage.paths.image;
-    if (path) {
-      return path;
+    const files = result.data.findImage.files;
+    if (files && Array.isArray(files) && files.length > 0) {
+      for (const file of files) {
+        if (file.path) {
+          return file.path;
+        }
+      }
+      return null;
     } else {
       return null;
     }
