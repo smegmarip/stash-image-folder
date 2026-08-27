@@ -121,7 +121,6 @@
         }`,
     };
     var result = await csLib.callGQL(reqData);
-    console.dir(result);
     const visual_files = result.findImage.visual_files;
 
     if (
@@ -187,7 +186,6 @@
     waitForElm(wrapper).then(async ($el) => {
       const [_, image_id] = getScenarioAndID();
       const imagePath = await getParentImagePath(image_id);
-      console.log("imagePath:", imagePath);
       if (imagePath) {
         waitForElm(btnGrp).then(async ($btnGrpEl) => {
           if (!document.querySelector("#parentFolder")) {
