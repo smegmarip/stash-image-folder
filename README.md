@@ -1,17 +1,30 @@
 # Stash Image Folder
 
-Navigates to the scene or image parent
+Stash UI plugin that adds a button for opening the parent folder of the current image or scene.
 
-# Stash Userscripts
+## Installation
 
-Installation requires a browser extension such as [Tampermonkey](https://www.tampermonkey.net/).
+This plugin is not available in the Stash plugin repository. Install it manually or clone this repository into Stash's configured plugins directory. The plugin requires the **CommunityScripts UI Library**.
 
-**By default the userscripts only work for `http://localhost:9999`**
+For a manual installation, copy `imagefolder.js` and `imagefolder.yml` into a plugin directory and keep them together. Alternatively, clone the repository from that directory:
 
-> If you access Stash from a different address, you will need to modify the userscript when you install it.
->
-> Find the line `// @match       http://localhost:9999/*` and replace `http://localhost:9999/*` with your Stash address.
+```sh
+git clone https://github.com/smegmarip/stash-image-folder.git
+```
 
-[INSTALL USERSCRIPT](dist/imageFolder.user.js?raw=1)
+Reload Stash after installing or updating the plugin.
 
-Once installed, A new icon will show on an image's or scene's page next to the organized button.
+## Usage
+
+On an image or scene page, use the folder button in the toolbar. It opens the corresponding Stash image or scene list filtered to the parent directory of the file.
+
+The button is only shown when Stash provides a file path for the image or scene. The plugin supports both local paths and paths returned with a `file://` prefix, and works with any Stash host URL because navigation uses relative links.
+
+## Plugin Files
+
+- `imagefolder.yml` defines the plugin and its CommunityScripts UI Library dependency.
+- `imagefolder.js` queries Stash's GraphQL API for the current file path and adds the parent-folder button to image and scene toolbars.
+
+## Changelog
+
+- Removed the unused standalone userscript and parent-folder SVG asset. Parent-folder navigation is now provided by the Stash UI plugin.
