@@ -1,0 +1,9 @@
+name: Image Folder
+# requires: StashUserscriptLibrary
+description: Navigate to parent folder.
+version: 1.0.0
+ui:
+  requires:
+    - CommunityScriptsUILibrary
+  javascript:
+    - imagefolder.js
