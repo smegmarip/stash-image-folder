@@ -28,6 +28,7 @@
    *
    *
    * @param filePath Specify the path of the file
+   * @deprecated Use getParentImagePath instead.
    *
    * @return The directory part of a file path
    */
@@ -36,6 +37,20 @@
     let normalizedPath = filePath.replace(/\\/g, "/");
     // Extract the directory part
     return normalizedPath.substring(0, normalizedPath.lastIndexOf("/"));
+  }
+
+  /**
+   * Adds a trailing slash to the given path if it doesn't already have one.
+   *
+   * @param path The path to which a trailing slash should be added
+   *
+   * @return The path with a trailing slash
+   */
+  function addTrailingSlash(path) {
+    if (!path.endsWith("/")) {
+      return path + "/";
+    }
+    return path;
   }
 
   /**
@@ -78,25 +93,45 @@
   }
 
   /**
-   * Retrieves the path for a given image ID.
+   * Retrieves the path for the parent of a given image ID.
    *
    * @param {number} image_id - The ID of the image to retrieve the path for.
-   * @returns {Promise<string|null>} - A Promise that resolves with the image path if it exists, or null if it does not.
+   * @returns {Promise<string|null>} - A Promise that resolves with the parent image path if it exists, or null if it does not.
    */
-  async function getImagePath(image_id) {
+  async function getParentImagePath(image_id) {
     const reqData = {
       query: `{
           findImage(id: ${image_id}){
-            files { path }
+            visual_files {
+              ... on VideoFile {
+                id
+                path
+                parent_folder {
+                  path
+                }
+              }
+              ... on ImageFile {
+                id
+                parent_folder {
+                  path
+                }
+              }
+            }
           }
         }`,
     };
     var result = await csLib.callGQL(reqData);
-    const files = result.findImage.files;
-    if (files && Array.isArray(files) && files.length > 0) {
-      for (const file of files) {
-        if (file.path) {
-          return file.path;
+    console.dir(result);
+    const visual_files = result.findImage.visual_files;
+
+    if (
+      visual_files &&
+      Array.isArray(visual_files) &&
+      visual_files.length > 0
+    ) {
+      for (const file of visual_files) {
+        if (file.parent_folder && file.parent_folder.path) {
+          return file.parent_folder.path;
         }
       }
       return null;
@@ -106,29 +141,33 @@
   }
 
   /**
-   * Retrieves the path for a given Scene ID.
+   * Retrieves the path for the parent of a given Scene ID.
    *
    * @param {number} scene_id - The ID of the scene to retrieve the path for.
-   * @returns {Promise<string|null>} - A Promise that resolves with the scene path if it exists, or null if it does not.
+   * @returns {Promise<string|null>} - A Promise that resolves with the parent scene path if it exists, or null if it does not.
    */
-  async function getScenePath(scene_id) {
+  async function getParentScenePath(scene_id) {
     const reqData = {
       query: `{
           findScene(id: ${scene_id}){
             files {
-              path
+              parent_folder {
+                path
+              }
             }
           }
         }`,
     };
     var result = await csLib.callGQL(reqData);
-    if (!result.findScene || result.findScene.files.length == 0) {
-      return null;
-    }
+    const files = result.findScene.files;
 
-    const path = result.findScene.files[0].path;
-    if (path) {
-      return path;
+    if (files && Array.isArray(files) && files.length > 0) {
+      for (const file of files) {
+        if (file.parent_folder && file.parent_folder.path) {
+          return file.parent_folder.path;
+        }
+      }
+      return null;
     } else {
       return null;
     }
@@ -147,7 +186,8 @@
     let wrapper = ".image-container";
     waitForElm(wrapper).then(async ($el) => {
       const [_, image_id] = getScenarioAndID();
-      const imagePath = await getImagePath(image_id);
+      const imagePath = await getParentImagePath(image_id);
+      console.log("imagePath:", imagePath);
       if (imagePath) {
         waitForElm(btnGrp).then(async ($btnGrpEl) => {
           if (!document.querySelector("#parentFolder")) {
@@ -162,7 +202,7 @@
             $btnGrpEl.prepend(spn);
             btn.addEventListener("click", function () {
               const parentPath = rawurlencode(
-                directory(imagePath.replace(/^file:\/\//i, "")),
+                addTrailingSlash(imagePath.replace(/^file:\/\//i, "")),
               );
               window.location.href = `/images?c=("type":"path","value":"%5C"${parentPath}%5C"","modifier":"INCLUDES")&sortby=updated_at&sortdir=desc&perPage=250`;
               return;
@@ -192,7 +232,7 @@
     let wrapper = ".VideoPlayer .video-wrapper";
     waitForElm(wrapper).then(async ($el) => {
       const [_, scene_id] = getScenarioAndID();
-      const scenePath = await getScenePath(scene_id);
+      const scenePath = await getParentScenePath(scene_id);
       if (scenePath) {
         waitForElm(btnGrp).then(async ($btnGrpEl) => {
           if (!document.querySelector("#parentFolder")) {
@@ -207,7 +247,7 @@
             $btnGrpEl.prepend(spn);
             btn.addEventListener("click", function () {
               const parentPath = rawurlencode(
-                directory(scenePath.replace(/^file:\/\//i, "")),
+                addTrailingSlash(scenePath.replace(/^file:\/\//i, "")),
               );
               window.location.href = `/scenes?c=("type":"path","value":"%5C"${parentPath}%5C"","modifier":"INCLUDES")&sortby=updated_at&sortdir=desc&perPage=250`;
               return;

@@ -27,4 +27,7 @@ The button is only shown when Stash provides a file path for the image or scene.
 
 ## Changelog
 
-- Removed the unused standalone userscript and parent-folder SVG asset. Parent-folder navigation is now provided by the Stash UI plugin.
+- Updated image and scene GraphQL queries to retrieve each file's `parent_folder` directly.
+- Replaced the standalone userscript with a Stash UI plugin that adds parent-folder navigation to image and scene toolbars using Stash's GraphQL API.
+- Removed the unused userscript and parent-folder SVG asset.
+- Updated the installation documentation to cover manual installation and cloning the repository, since the plugin is not available in the Stash plugin repository.
